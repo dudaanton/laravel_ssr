@@ -11,17 +11,18 @@ div
 
 <script>
 import axios from 'axios'
+import { mapGetters } from 'vuex'
 
-const fetchUsers = (callback) => {
-  return new Promise((resolve) => {
-    axios
-      .get('/api/users')
-      .then(response => {
-          callback(response.data)
-          resolve()
-      })
-  })
-}
+// const fetchUsers = (callback) => {
+//   return new Promise((resolve) => {
+//     axios
+//       .get('/api/users')
+//       .then(response => {
+//           callback(response.data)
+//           resolve()
+//       })
+//   })
+// }
 
 export default {
   data: () => {
@@ -29,8 +30,13 @@ export default {
       test: 'hi all',
       loading: false,
       error: false,
-      users: []
     }
+  },
+
+  computed: {
+    ...mapGetters({
+      users: 'getUsers'
+    })
   },
 
   // created() {
@@ -39,9 +45,7 @@ export default {
 
   methods: {
       fetchData () {
-          this.error = this.users = null;
-          this.loading = true;
-          fetchUsers((data) => this.setData(data.data))
+        return this.$store.dispatch('fetchUsers')
       },
 
       setData (data) {
@@ -50,17 +54,13 @@ export default {
   },
 
   mounted () {
-    // console.log('fetchUsers', fetchUsers(this.setData));
+    if (!this.users) {
+      this.fetchData()
+    }
   },
 
   serverPrefetch () {
-    // this.users = [{ name: 'test' }]
-    // return fetchUsers(this.setData)
-    return new Promise((resolve) => {
-      setTimeout(() => {
-        resolve()
-      }, 10000)
-    })
+    return this.fetchData()
   }
 }
 </script>

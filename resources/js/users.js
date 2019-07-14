@@ -1,29 +1,20 @@
 import Vue from 'vue'
-import VueRouter from 'vue-router'
 import App from './layouts/App'
-import Users from './pages/Users/index'
-import User from './pages/Users/_id'
-import ExampleComponent from './components/ExampleComponent'
+import createRouter from './users_router'
+import createStore from './store'
+import { sync } from 'vuex-router-sync'
 
-Vue.use(VueRouter)
+const router = createRouter()
+const store = createStore()
 
-const router = new VueRouter({
-    mode: 'history',
-    routes: [
-        {
-            path: '/users',
-            name: 'users',
-            component: Users
-        },
-        {
-            path: '/users/:id',
-            name: 'user',
-            component: User
-        },
-    ],
+sync(store, router)
+
+const app = new Vue({
+  render: (r) => r(App),
+  router,
+  store
 });
 
-export default new Vue({
-    render: (r) => r(App),
-    router
-});
+export default () => {
+  return { app, router, store }
+}
